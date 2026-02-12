@@ -31,7 +31,7 @@
     <h2>Cadastrar Pessoa</h2>
     <input type="text" id="nome" placeholder="Nome completo">
     <input type="text" id="cpf" placeholder="CPF">
-    <input type="date" id="data_nascimento" placeholder="Data de Nascimento">
+    <input type="date" id="data_nascimento">
     <input type="text" id="nacionalidade" placeholder="Nacionalidade">
     <input type="text" id="telefone" placeholder="Telefone">
     <input type="text" id="endereco_rua" placeholder="Rua">
@@ -67,24 +67,21 @@
       const email = document.getElementById('email').value.trim();
       const senha = document.getElementById('senha').value.trim();
 
-      if (!email || !senha) {
-        alert("Por favor, preencha email e senha.");
-        return;
+      if(!email || !senha) { alert("Preencha email e senha."); return; }
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
+        if(error) throw error;
+
+        console.log("Login OK", data);
+        document.getElementById('loginDiv').style.display = 'none';
+        document.getElementById('mainDiv').style.display = 'block';
+
+        carregarOficinas();
+      } catch(err) {
+        console.log(err);
+        alert("Erro no login: " + err.message);
       }
-
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password: senha });
-
-      if(error) {
-        console.log(error);
-        alert("Erro no login: " + error.message);
-        return;
-      }
-
-      console.log("Login OK:", data);
-      document.getElementById('loginDiv').style.display = 'none';
-      document.getElementById('mainDiv').style.display = 'block';
-
-      carregarOficinas();
     });
 
     // ===== LOGOUT =====
@@ -97,11 +94,7 @@
     // ===== CARREGAR OFICINAS =====
     async function carregarOficinas() {
       const { data, error } = await supabase.from('oficinas').select('*');
-      if(error) { 
-        console.log(error); 
-        alert("Erro ao carregar oficinas"); 
-        return; 
-      }
+      if(error) { console.log(error); alert("Erro ao carregar oficinas"); return; }
 
       const sel = document.getElementById('oficina');
       sel.innerHTML = '';
@@ -146,11 +139,6 @@
       }
     });
   </script>
-
-</body>
-</html>
-
-</script>
 
 </body>
 </html>
