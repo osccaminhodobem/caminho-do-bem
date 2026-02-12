@@ -1,171 +1,181 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Projeto Caminho do Bem</title>
+<meta charset="UTF-8">
+<title>Projeto Caminho do Bem</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-  <style>
-    body { font-family: Arial; padding: 20px; }
-    input, select, textarea, button {
-      display: block;
-      margin: 6px 0;
-      padding: 6px;
-      width: 300px;
-    }
-    textarea { height: 60px; }
-    #mainDiv { display: none; margin-top: 20px; }
-  </style>
+<style>
+body { font-family: Arial; padding: 20px; }
+input, select, textarea, button {
+display:block;
+margin:6px 0;
+padding:6px;
+width:300px;
+}
+textarea { height:60px; }
+#mainDiv { display:none; margin-top:20px; }
+</style>
 </head>
 
 <body>
 
 <div id="loginDiv">
-  <h1>Projeto Caminho do Bem</h1>
-  <h2>Login</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="senha" placeholder="Senha">
-  <button id="btnLogin">Entrar</button>
+<h1>Projeto Caminho do Bem</h1>
+<h2>Login</h2>
+<input type="email" id="email" placeholder="Email">
+<input type="password" id="senha" placeholder="Senha">
+<button id="btnLogin">Entrar</button>
 </div>
 
 <div id="mainDiv">
-  <h1>Área Interna</h1>
 
-  <h2>Cadastrar Pessoa</h2>
-  <input type="text" id="nome" placeholder="Nome completo">
-  <input type="text" id="cpf" placeholder="CPF">
-  <input type="date" id="data_nascimento">
-  <input type="text" id="nacionalidade" placeholder="Nacionalidade">
-  <input type="text" id="telefone" placeholder="Telefone">
-  <input type="text" id="endereco_rua" placeholder="Rua">
-  <input type="text" id="endereco_bairro" placeholder="Bairro">
-  <input type="text" id="endereco_numero" placeholder="Número">
-  <input type="text" id="endereco_cep" placeholder="CEP">
-  <input type="text" id="cidade" placeholder="Cidade">
-  <textarea id="observacoes" placeholder="Observações"></textarea>
+<h2>Cadastrar Pessoa</h2>
 
-  <label>Oficina:</label>
-  <select id="oficina"></select>
+<input type="text" id="nome" placeholder="Nome completo">
+<input type="text" id="cpf" placeholder="CPF">
+<input type="date" id="data_nascimento">
 
-  <label>Tipo de Atendimento:</label>
-  <select id="tipo_atendimento">
-    <option value="Direto">Direto</option>
-    <option value="Indireto">Indireto</option>
-  </select>
+<input type="text" id="telefone" placeholder="Telefone">
+<input type="text" id="cidade" placeholder="Cidade">
 
-  <button id="btnCadastrar">Cadastrar</button>
+<input type="text" id="endereco_rua" placeholder="Rua">
+<input type="text" id="endereco_numero" placeholder="Número">
+<input type="text" id="endereco_bairro" placeholder="Bairro">
+<input type="text" id="endereco_cep" placeholder="CEP">
+
+<textarea id="observacoes" placeholder="Observações"></textarea>
+
+<label>Oficina</label>
+<select id="oficina"></select>
+
+<label>Tipo Atendimento</label>
+<select id="tipo_atendimento">
+<option value="Psicossocial">Psicossocial</option>
+<option value="Educacional">Educacional</option>
+<option value="Assistencial">Assistencial</option>
+</select>
+
+<label>Direto ou Indireto</label>
+<select id="direto_indireto">
+<option value="Direto">Direto</option>
+<option value="Indireto">Indireto</option>
+</select>
+
+<label>Data Atendimento</label>
+<input type="date" id="data_atendimento">
+
+<button id="btnCadastrar">Cadastrar Tudo</button>
+
 </div>
 
 <script>
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-  // ===== SUPABASE =====
-  const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
+const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
 
-  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  console.log("Supabase conectado:", supabaseClient);
+console.log("Supabase conectado");
 
-  // ===== LOGIN FAKE =====
-  document.getElementById('btnLogin').addEventListener('click', () => {
-    document.getElementById('loginDiv').style.display = 'none';
-    document.getElementById('mainDiv').style.display = 'block';
-    carregarOficinas();
-  });
+// LOGIN FAKE
+document.getElementById("btnLogin").addEventListener("click", ()=>{
+document.getElementById("loginDiv").style.display="none";
+document.getElementById("mainDiv").style.display="block";
+carregarOficinas();
+});
 
-  // ===== CARREGAR OFICINAS =====
-  async function carregarOficinas() {
+// CARREGAR OFICINAS
+async function carregarOficinas(){
 
-    console.log("Carregando oficinas...");
+const {data,error} = await supabaseClient.from("oficinas").select("*");
 
-    const { data, error } = await supabaseClient
-      .from('oficinas')
-      .select('*');
+if(error){
+alert("Erro oficinas: "+error.message);
+return;
+}
 
-    console.log("Oficinas retorno:", data, error);
+const sel = document.getElementById("oficina");
+sel.innerHTML="";
 
-    if (error) {
-      alert("Erro ao carregar oficinas: " + error.message);
-      return;
-    }
+data.forEach(o=>{
+const opt=document.createElement("option");
+opt.value=o.id;
+opt.textContent=o.nome;
+sel.appendChild(opt);
+});
 
-    const sel = document.getElementById('oficina');
-    sel.innerHTML = '';
+}
 
-    data.forEach(o => {
-      const opt = document.createElement('option');
-      opt.value = o.id;
-      opt.textContent = o.nome;
-      sel.appendChild(opt);
-    });
-  }
+// CADASTRAR TUDO
+document.getElementById("btnCadastrar").addEventListener("click", async ()=>{
 
-  // ===== CADASTRAR =====
-  document.getElementById('btnCadastrar').addEventListener('click', async () => {
+try{
 
-    console.log("Botão cadastrar clicado");
+// montar endereco geral
+const enderecoCompleto = `
+${document.getElementById("endereco_rua").value},
+${document.getElementById("endereco_numero").value}
+${document.getElementById("endereco_bairro").value}
+CEP ${document.getElementById("endereco_cep").value}
+`;
 
-    const pessoa = {
-      nome: document.getElementById('nome').value,
-      cpf: document.getElementById('cpf').value,
-      data_nascimento: document.getElementById('data_nascimento').value,
-      nacionalidade: document.getElementById('nacionalidade').value,
-      telefone: document.getElementById('telefone').value,
-      endereco_rua: document.getElementById('endereco_rua').value,
-      endereco_bairro: document.getElementById('endereco_bairro').value,
-      endereco_numero: document.getElementById('endereco_numero').value,
-      endereco_cep: document.getElementById('endereco_cep').value,
-      cidade: document.getElementById('cidade').value,
-      observacoes: document.getElementById('observacoes').value
-    };
+// ===== PESSOA =====
+const pessoaObj = {
+nome: document.getElementById("nome").value,
+cpf: document.getElementById("cpf").value,
+data_nascimento: document.getElementById("data_nascimento").value,
+telefone: document.getElementById("telefone").value,
+cidade: document.getElementById("cidade").value,
 
-    console.log("Pessoa enviada:", pessoa);
+endereco: enderecoCompleto,
 
-    try {
+endereco_rua: document.getElementById("endereco_rua").value,
+endereco_bairro: document.getElementById("endereco_bairro").value,
+endereco_numero: document.getElementById("endereco_numero").value,
+endereco_cep: document.getElementById("endereco_cep").value,
 
-      const { data, error } = await supabaseClient
-        .from('pessoas')
-        .insert([pessoa])
-        .select();
+observacoes: document.getElementById("observacoes").value
+};
 
-      console.log("Insert pessoas retorno:", data, error);
+const {data:pessoaData,error:pessoaError} =
+await supabaseClient.from("pessoas").insert([pessoaObj]).select();
 
-      if (error) {
-        alert("Erro ao salvar pessoa: " + error.message);
-        return;
-      }
+if(pessoaError){
+alert("Erro pessoa: "+pessoaError.message);
+return;
+}
 
-      if (!data || data.length === 0) {
-        alert("Não retornou dados da pessoa.");
-        return;
-      }
+const pessoa_id = pessoaData[0].id;
 
-      const pessoa_id = data[0].id;
-      const oficina_id = document.getElementById('oficina').value;
+// ===== RELAÇÃO OFICINA =====
+const oficina_id = document.getElementById("oficina").value;
 
-      const { data: relData, error: relError } = await supabaseClient
-        .from('pessoa_oficina')
-        .insert([{ pessoa_id, oficina_id }])
-        .select();
+await supabaseClient.from("pessoa_oficina").insert([{
+pessoa_id,
+oficina_id
+}]);
 
-      console.log("Insert relação retorno:", relData, relError);
+// ===== ATENDIMENTO =====
+await supabaseClient.from("atendimentos").insert([{
+pessoa_id,
+tipo_atendimento: document.getElementById("tipo_atendimento").value,
+direto_indireto: document.getElementById("direto_indireto").value,
+data: document.getElementById("data_atendimento").value,
+descricao: document.getElementById("observacoes").value
+}]);
 
-      if (relError) {
-        alert("Erro ao vincular oficina: " + relError.message);
-        return;
-      }
+alert("Cadastro completo realizado!");
 
-      alert("Pessoa cadastrada com sucesso!");
+}catch(err){
+console.log(err);
+alert("Erro geral: "+err.message);
+}
 
-    } catch (err) {
-      console.error(err);
-      alert("Erro geral: " + err.message);
-    }
-
-  });
+});
 
 });
 
