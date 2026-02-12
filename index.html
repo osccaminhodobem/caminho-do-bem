@@ -5,7 +5,7 @@
   <title>Cadastro Caminho do Bem</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
+    body { font-family: Arial; padding: 20px; }
     input, select, textarea, button { display: block; margin: 6px 0; padding: 6px; width: 300px; }
     textarea { height: 60px; }
   </style>
@@ -17,7 +17,6 @@
 <input type="text" id="nome" placeholder="Nome completo">
 <input type="text" id="cpf" placeholder="CPF">
 <input type="date" id="data_nascimento">
-<input type="text" id="nacionalidade" placeholder="Nacionalidade">
 <input type="text" id="telefone" placeholder="Telefone">
 <input type="text" id="endereco_rua" placeholder="Rua">
 <input type="text" id="endereco_bairro" placeholder="Bairro">
@@ -28,12 +27,6 @@
 
 <label for="oficina">Oficina:</label>
 <select id="oficina"></select>
-
-<label for="tipo_atendimento">Tipo de Atendimento:</label>
-<select id="tipo_atendimento">
-  <option value="Direto">Direto</option>
-  <option value="Indireto">Indireto</option>
-</select>
 
 <button id="btnCadastrar">Cadastrar</button>
 
@@ -67,7 +60,6 @@
       nome: document.getElementById('nome').value,
       cpf: document.getElementById('cpf').value,
       data_nascimento: document.getElementById('data_nascimento').value,
-      nacionalidade: document.getElementById('nacionalidade').value,
       telefone: document.getElementById('telefone').value,
       endereco_rua: document.getElementById('endereco_rua').value,
       endereco_bairro: document.getElementById('endereco_bairro').value,
@@ -78,7 +70,6 @@
     };
 
     const oficina_id = document.getElementById('oficina').value;
-    const tipo_atendimento = document.getElementById('tipo_atendimento').value;
 
     try {
       // Inserir pessoa
@@ -88,7 +79,7 @@
       const pessoa_id = data[0].id;
 
       // Vincular à oficina
-      const { error: relError } = await supabase.from('pessoa_oficina').insert([{ pessoa_id, oficina_id, tipo_atendimento }]);
+      const { error: relError } = await supabase.from('pessoa_oficina').insert([{ pessoa_id, oficina_id }]);
       if(relError) throw relError;
 
       alert("Pessoa cadastrada com sucesso!");
