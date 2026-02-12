@@ -3,14 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <title>Projeto Caminho do Bem</title>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
   <style>
     body { font-family: Arial; padding: 20px; }
-    input, select, textarea, button { display: block; margin: 6px 0; padding: 6px; width: 300px; }
+    input, select, textarea, button {
+      display: block;
+      margin: 6px 0;
+      padding: 6px;
+      width: 300px;
+    }
     textarea { height: 60px; }
     #mainDiv { display: none; margin-top: 20px; }
   </style>
 </head>
+
 <body>
 
 <div id="loginDiv">
@@ -37,10 +45,10 @@
   <input type="text" id="cidade" placeholder="Cidade">
   <textarea id="observacoes" placeholder="Observações"></textarea>
 
-  <label for="oficina">Oficina:</label>
+  <label>Oficina:</label>
   <select id="oficina"></select>
 
-  <label for="tipo_atendimento">Tipo de Atendimento:</label>
+  <label>Tipo de Atendimento:</label>
   <select id="tipo_atendimento">
     <option value="Direto">Direto</option>
     <option value="Indireto">Indireto</option>
@@ -50,14 +58,18 @@
 </div>
 
 <script>
-  // ===== CONEXÃO SUPABASE =====
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  // ===== SUPABASE =====
   const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
   const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  console.log("Supabase carregado");
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ===== LOGIN SIMPLES =====
+  console.log("Supabase conectado:", supabaseClient);
+
+  // ===== LOGIN FAKE =====
   document.getElementById('btnLogin').addEventListener('click', () => {
     document.getElementById('loginDiv').style.display = 'none';
     document.getElementById('mainDiv').style.display = 'block';
@@ -66,11 +78,23 @@
 
   // ===== CARREGAR OFICINAS =====
   async function carregarOficinas() {
-    const { data, error } = await supabase.from('oficinas').select('*');
-    if(error) { alert("Erro ao carregar oficinas: " + error.message); console.log(error); return; }
+
+    console.log("Carregando oficinas...");
+
+    const { data, error } = await supabaseClient
+      .from('oficinas')
+      .select('*');
+
+    console.log("Oficinas retorno:", data, error);
+
+    if (error) {
+      alert("Erro ao carregar oficinas: " + error.message);
+      return;
+    }
 
     const sel = document.getElementById('oficina');
     sel.innerHTML = '';
+
     data.forEach(o => {
       const opt = document.createElement('option');
       opt.value = o.id;
@@ -79,8 +103,11 @@
     });
   }
 
-  // ===== CADASTRAR PESSOA =====
+  // ===== CADASTRAR =====
   document.getElementById('btnCadastrar').addEventListener('click', async () => {
+
+    console.log("Botão cadastrar clicado");
+
     const pessoa = {
       nome: document.getElementById('nome').value,
       cpf: document.getElementById('cpf').value,
@@ -95,25 +122,53 @@
       observacoes: document.getElementById('observacoes').value
     };
 
-    console.log("Tentando cadastrar:", pessoa);
+    console.log("Pessoa enviada:", pessoa);
 
     try {
-      const { data, error } = await supabase.from('pessoas').insert([pessoa]).select();
-      if(error) { alert("Erro: " + error.message); console.log(error); return; }
+
+      const { data, error } = await supabaseClient
+        .from('pessoas')
+        .insert([pessoa])
+        .select();
+
+      console.log("Insert pessoas retorno:", data, error);
+
+      if (error) {
+        alert("Erro ao salvar pessoa: " + error.message);
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        alert("Não retornou dados da pessoa.");
+        return;
+      }
 
       const pessoa_id = data[0].id;
       const oficina_id = document.getElementById('oficina').value;
 
-      const { data: relData, error: relError } = await supabase.from('pessoa_oficina').insert([{ pessoa_id, oficina_id }]).select();
-      if(relError) { alert("Erro ao vincular oficina: " + relError.message); console.log(relError); return; }
+      const { data: relData, error: relError } = await supabaseClient
+        .from('pessoa_oficina')
+        .insert([{ pessoa_id, oficina_id }])
+        .select();
+
+      console.log("Insert relação retorno:", relData, relError);
+
+      if (relError) {
+        alert("Erro ao vincular oficina: " + relError.message);
+        return;
+      }
 
       alert("Pessoa cadastrada com sucesso!");
-      console.log("Cadastro completo:", data, relData);
-    } catch(err) {
+
+    } catch (err) {
+      console.error(err);
       alert("Erro geral: " + err.message);
-      console.log(err);
     }
+
   });
+
+});
+
 </script>
 
 </body>
