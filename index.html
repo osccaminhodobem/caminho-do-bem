@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <title>Projeto Caminho do Bem</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, select, textarea, button { display: block; margin: 8px 0; padding: 6px; width: 300px; }
+    textarea { height: 60px; }
+    h1, h2 { margin-top: 20px; }
+    #mainDiv { margin-top: 20px; }
+  </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
 
-  <!-- TELA DE LOGIN -->
+  <!-- LOGIN -->
   <div id="loginDiv">
     <h1>Projeto Caminho do Bem</h1>
     <h2>Login</h2>
@@ -18,7 +25,7 @@
 
   <!-- ÁREA INTERNA -->
   <div id="mainDiv" style="display:none;">
-    <h1>Área Interna - Caminho do Bem</h1>
+    <h1>Área Interna</h1>
 
     <h2>Cadastrar Pessoa</h2>
     <input type="text" id="nome" placeholder="Nome completo">
@@ -46,7 +53,7 @@
     <button onclick="logout()">Sair</button>
   </div>
 
-  <!-- Conecta o JS -->
+  <!-- JS -->
   <script src="script.js"></script>
 </body>
 </html>
