@@ -4,29 +4,51 @@
   <meta charset="UTF-8">
   <title>Caminho do Bem</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input, select, button, textarea { display: block; margin: 8px 0; padding: 6px; width: 300px; }
+    textarea { height: 60px; }
+    h1, h2 { margin-top: 20px; }
+    #mainDiv { display: none; margin-top: 20px; }
+  </style>
 </head>
 <body>
   <h1>Projeto Caminho do Bem</h1>
 
-  <h2>Login</h2>
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="senha" placeholder="Senha">
-  <button onclick="login()">Entrar</button>
+  <!-- LOGIN -->
+  <div id="loginDiv">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="login()">Entrar</button>
+  </div>
 
-  <h2>Cadastrar Pessoa</h2>
-  <input type="text" id="nome" placeholder="Nome completo">
-  <input type="text" id="cpf" placeholder="CPF">
-  <button onclick="cadastrar()">Cadastrar</button>
+  <!-- ÁREA INTERNA -->
+  <div id="mainDiv">
+    <h2>Cadastrar Pessoa</h2>
+    <input type="text" id="nome" placeholder="Nome completo">
+    <input type="text" id="cpf" placeholder="CPF">
+    <input type="date" id="data_nascimento" placeholder="Data de Nascimento">
+    <input type="text" id="telefone" placeholder="Telefone">
+    <input type="text" id="cidade" placeholder="Cidade">
+    <button onclick="cadastrar()">Cadastrar</button>
+    <button onclick="logout()">Sair</button>
+  </div>
 
   <script>
     const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
     const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
-
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // ===== LOGIN =====
     async function login() {
       const email = document.getElementById('email').value;
       const senha = document.getElementById('senha').value;
+
+      if (!email || !senha) { 
+        alert("Preencha email e senha");
+        return;
+      }
 
       const { error } = await supabaseClient.auth.signInWithPassword({
         email: email,
@@ -37,21 +59,40 @@
         alert("Erro no login: " + error.message);
       } else {
         alert("Login realizado!");
+        document.getElementById('loginDiv').style.display = 'none';
+        document.getElementById('mainDiv').style.display = 'block';
       }
     }
 
+    // ===== LOGOUT =====
+    async function logout() {
+      await supabaseClient.auth.signOut();
+      document.getElementById('mainDiv').style.display = 'none';
+      document.getElementById('loginDiv').style.display = 'block';
+    }
+
+    // ===== CADASTRO =====
     async function cadastrar() {
       const nome = document.getElementById('nome').value;
       const cpf = document.getElementById('cpf').value;
+      const data_nascimento = document.getElementById('data_nascimento').value;
+      const telefone = document.getElementById('telefone').value;
+      const cidade = document.getElementById('cidade').value;
 
       const { error } = await supabaseClient
         .from('pessoas')
-        .insert([{ nome, cpf }]);
+        .insert([{ nome, cpf, data_nascimento, telefone, cidade }]);
 
       if (error) {
         alert("Erro ao cadastrar: " + error.message);
       } else {
         alert("Pessoa cadastrada com sucesso!");
+        // limpa campos
+        document.getElementById('nome').value = '';
+        document.getElementById('cpf').value = '';
+        document.getElementById('data_nascimento').value = '';
+        document.getElementById('telefone').value = '';
+        document.getElementById('cidade').value = '';
       }
     }
   </script>
