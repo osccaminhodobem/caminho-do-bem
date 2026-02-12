@@ -3,18 +3,27 @@ const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// DEBUG inicial
+console.log("Supabase Client:", supabaseClient);
+
 // LOGIN
 async function login() {
   const email = document.getElementById('email').value;
   const senha = document.getElementById('senha').value;
 
-  const { error } = await supabaseClient.auth.signInWithPassword({
-    email, password: senha
+  console.log("Tentando login:", email, senha); // debug
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password: senha
   });
 
   if (error) {
+    console.log("Erro detalhado:", error);
     alert("Erro no login: " + error.message);
   } else {
+    console.log("Login bem-sucedido:", data);
+    alert("Login realizado!");
     document.getElementById('loginDiv').style.display = 'none';
     document.getElementById('mainDiv').style.display = 'block';
     carregarOficinas();
@@ -40,6 +49,8 @@ async function carregarOficinas() {
       option.textContent = oficina.nome;
       select.appendChild(option);
     });
+  } else {
+    console.log("Erro ao carregar oficinas:", error);
   }
 }
 
@@ -59,12 +70,15 @@ async function cadastrar() {
     observacoes: document.getElementById('observacoes').value
   };
 
+  console.log("Cadastrando pessoa:", pessoa);
+
   const { data: pessoaData, error: pessoaError } = await supabaseClient
     .from('pessoas')
     .insert([pessoa])
     .select();
 
   if (pessoaError) {
+    console.log("Erro ao cadastrar pessoa:", pessoaError);
     alert("Erro ao cadastrar pessoa: " + pessoaError.message);
     return;
   }
@@ -77,6 +91,10 @@ async function cadastrar() {
     .insert([{ pessoa_id, oficina_id }]);
 
   if (relError) {
+    console.log("Erro ao relacionar oficina:", relError);
     alert("Erro ao relacionar oficina: " + relError.message);
     return;
   }
+
+  alert("Pessoa cadastrada com sucesso!");
+}
