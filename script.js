@@ -1,6 +1,6 @@
+// Conexão com Supabase
 const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
-
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // LOGIN
@@ -8,15 +8,13 @@ async function login() {
   const email = document.getElementById('email').value;
   const senha = document.getElementById('senha').value;
 
-  const { error, data } = await supabaseClient.auth.signInWithPassword({
-    email,
-    password: senha
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email, password: senha
   });
 
   if (error) {
     alert("Erro no login: " + error.message);
   } else {
-    alert("Login realizado!");
     document.getElementById('loginDiv').style.display = 'none';
     document.getElementById('mainDiv').style.display = 'block';
     carregarOficinas();
@@ -82,6 +80,3 @@ async function cadastrar() {
     alert("Erro ao relacionar oficina: " + relError.message);
     return;
   }
-
-  alert("Pessoa cadastrada com sucesso!");
-}
