@@ -1,4 +1,26 @@
-<!DOCTYPE html>
+[12:13, 12/02/2026] Parceiros Voluntários: // ==========================================
+// CONEXÃO COM SUPABASE
+// ==========================================
+const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
+const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+console.log("Supabase Client inicializado:", supabaseClient);
+
+// ==========================================
+// LOGIN
+// ==========================================
+async function login() {
+  const email = document.getElementById('email').value.trim();
+  const senha = document.getElementById('senha').value.trim();
+
+  if (!email || !senha) {
+    alert("Por favor, preencha email e senha.");
+    return;
+  }
+
+  console.log("Tentando login:", …
+[12:16, 12/02/2026] Parceiros Voluntários: <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -10,6 +32,7 @@
     h1, h2 { margin-top: 20px; }
     #mainDiv { margin-top: 20px; }
   </style>
+  <!-- Biblioteca Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body>
@@ -20,7 +43,7 @@
     <h2>Login</h2>
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="senha" placeholder="Senha">
-    <button onclick="login()">Entrar</button>
+    <button id="btnLogin">Entrar</button>
   </div>
 
   <!-- ÁREA INTERNA -->
@@ -49,7 +72,7 @@
       <option value="Indireto">Indireto</option>
     </select>
 
-    <button onclick="cadastrar()">Cadastrar</button>
+    <button id="btnCadastrar">Cadastrar</button>
     <button onclick="logout()">Sair</button>
   </div>
 
