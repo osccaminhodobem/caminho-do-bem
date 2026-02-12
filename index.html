@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Caminho do Bem</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+  <h1>Projeto Caminho do Bem</h1>
+
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="senha" placeholder="Senha">
+  <button onclick="login()">Entrar</button>
+
+  <h2>Cadastrar Pessoa</h2>
+  <input type="text" id="nome" placeholder="Nome completo">
+  <input type="text" id="cpf" placeholder="CPF">
+  <button onclick="cadastrar()">Cadastrar</button>
+
+  <script>
+    const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function login() {
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+
+      const { error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: senha
+      });
+
+      if (error) {
+        alert("Erro no login: " + error.message);
+      } else {
+        alert("Login realizado!");
+      }
+    }
+
+    async function cadastrar() {
+      const nome = document.getElementById('nome').value;
+      const cpf = document.getElementById('cpf').value;
+
+      const { error } = await supabaseClient
+        .from('pessoas')
+        .insert([{ nome, cpf }]);
+
+      if (error) {
+        alert("Erro ao cadastrar: " + error.message);
+      } else {
+        alert("Pessoa cadastrada com sucesso!");
+      }
+    }
+  </script>
+</body>
+</html>
