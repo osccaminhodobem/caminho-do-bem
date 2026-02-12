@@ -5,12 +5,20 @@ const SUPABASE_URL = "https://bkipzmooqahwsxrtzomj.supabase.co";
 const SUPABASE_KEY = "sb_publishable_uLmGAJieXUlYnr0PT8AMUw_TVsDT9mF";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-console.log("Supabase Client inicializado:", supabaseClient);
+console.log("Script carregado. Supabase Client inicializado:", supabaseClient);
+
+// ==========================================
+// EVENT LISTENERS
+// ==========================================
+document.getElementById('btnLogin').addEventListener('click', login);
+document.getElementById('btnCadastrar').addEventListener('click', cadastrar);
 
 // ==========================================
 // LOGIN
 // ==========================================
 async function login() {
+  console.log("Botão Entrar clicado");
+
   const email = document.getElementById('email').value.trim();
   const senha = document.getElementById('senha').value.trim();
 
@@ -34,7 +42,7 @@ async function login() {
     return;
   }
 
-  // Se login OK
+  // Login OK
   document.getElementById('loginDiv').style.display = 'none';
   document.getElementById('mainDiv').style.display = 'block';
 
